@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import abi from './abi.json'
 
 const contractAddress = "0x82aB560eFc8264b158663b21aEd395D886a53206";
 
@@ -16,11 +17,12 @@ function App() {
       if (window.ethereum) {
         const _provider = new ethers.BrowserProvider(window.ethereum);
         const _signer = await _provider.getSigner();
-        const _contract = new ethers.Contract(contractAddress, contractABI, _signer);
+        const _contract = new ethers.Contract(contractAddress, abi, _signer);
 
         setProvider(_provider);
         setSigner(_signer);
         setContract(_contract);
+        console.log("deposit successful")
       } else {
         alert("Please install MetaMask to use this application.");
       }
@@ -79,12 +81,13 @@ function App() {
       <div>
         <input
           type="number"
+          className="input"
           placeholder="Enter amount in ETH"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <button onClick={deposit}>Deposit</button>
-        <button onClick={withdraw}>Withdraw</button>
+        <button onClick={deposit} className="button1">Deposit</button>
+        <button onClick={withdraw} className="button2">Withdraw</button>
       </div>
     </div>
   );
