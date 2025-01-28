@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import abi from './abi.json'
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const contractAddress = "0x82aB560eFc8264b158663b21aEd395D886a53206";
 
@@ -22,7 +25,8 @@ function App() {
         setProvider(_provider);
         setSigner(_signer);
         setContract(_contract);
-        console.log("deposit successful")
+        toast.success("MetaMask connected successfully!");
+        toast.success("deposit successful");
       } else {
         alert("Please install MetaMask to use this application.");
       }
@@ -44,11 +48,11 @@ function App() {
           value: ethers.parseEther(amount),
         });
         await tx.wait();
-        alert("Deposit successful!");
+        toast.success("deposited sucessful");
         getBalance();
       } catch (error) {
-        console.error(error);
-        alert("Deposit failed!");
+        // console.error(error);
+        toast.error("Deposit failed!");
       }
     }
   };
@@ -58,20 +62,21 @@ function App() {
       try {
         const tx = await contract.withdraw(ethers.parseEther(amount));
         await tx.wait();
-        alert("Withdrawal successful!");
+        toast.success("Withdrawal successful!");
         getBalance();
       } catch (error) {
         console.error(error);
         if (error.code === "CALL_EXCEPTION") {
-          alert("Insufficient balance for withdrawal.");
+          toast.error("Insufficient balance for withdrawal.");
         } else {
-          alert("Withdrawal failed!");
+          toast.error("Withdrawal failed!");
         }
       }
     }
   };
 
   return (
+    <>
     <div className="App">
       <h1>Assessment DApp</h1>
       <div>
@@ -90,6 +95,9 @@ function App() {
         <button onClick={withdraw} className="button2">Withdraw</button>
       </div>
     </div>
+      <ToastContainer/>
+
+    </>
   );
 }
 
