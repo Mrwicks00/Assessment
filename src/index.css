@@ -1,19 +1,28 @@
 body {
-  background-color: grey;
+  background-color: rgb(212, 195, 195);
+  display: flex;
+  justify-content: center;
+  font-family: sans-serif;
+  align-items: center;
+  height: 100vh;
 }
 
 .App{
+  
   width: 400px;
-  border: 2px solid red;
+  /* border: 2px solid red; */
   text-align: center;
   padding: 10px;
   margin: auto;
-  background-color: white;
+  background-color: rgb(230, 175, 175);
+  transform: translate(-50% -50%);
+  box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .input {
   padding: 10px;
-  border-radius: 10%;
+  border-radius: 10px;
+  border: none;
   outline: none;
   width: 80%;
   margin-bottom: 10px;
@@ -23,8 +32,9 @@ body {
   padding: 10px;
   width: 100px;
   margin-right: 10px;
-  background-color: green;
+  background-color: rgb(32, 219, 32);
   color: white;
+  border: none;
 }
 
 .button2 {
@@ -32,4 +42,41 @@ body {
   width: 100px;
   background-color: red;
   color: white;
+  border: none;
+}
+
+
+.getbalance-btn {
+  background-color: rgb(76, 76, 236);
+  padding: 10px;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 8rem;
+  text-wrap: nowrap;
+  margin-top: 10px
+}
+.p {
+  color: white;
+}
+
+.connect-btn {
+  background-color: rgb(76, 76, 236);
+  padding: 10px;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 8rem;
+  text-wrap: nowrap;
+  margin-bottom: 10px;
+}
+
+.p{
+  width: 100px;
+  border: 1px solid gray;
+  text-wrap: nowrap;
+  overflow: hidden;
+  
+  margin: auto;
+  text-align: center;
 }

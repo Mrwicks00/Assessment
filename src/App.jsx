@@ -1,104 +1,94 @@
-import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
+import { useState } from 'react'
 import abi from './abi.json'
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import {ethers} from 'ethers'
+import { ToastContainer, toast } from 'react-toastify';
+
+const App = () => {
+  const [balance, setUserBalance] = useState(0)
+  const [amount, setUserAmount] = useState('')
+  const [walletAddress, setWalletAddress] = useState('')
+
+  const ContractAddress = "0x82aB560eFc8264b158663b21aEd395D886a53206";
 
 
-const contractAddress = "0x82aB560eFc8264b158663b21aEd395D886a53206";
+  async function requestAccounts() {
+    await window.ethereum.request({method: "eth_requestAccounts"})
+    const accounts = await window.ethereum.request({method: "eth_accounts"})
 
+    setWalletAddress(accounts[0])
+  }
 
-function App() {
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
-  const [contract, setContract] = useState(null);
-  const [balance, setBalance] = useState("0");
-  const [amount, setAmount] = useState("");
-
-  useEffect(() => {
-    const initializeEthers = async () => {
-      if (window.ethereum) {
-        const _provider = new ethers.BrowserProvider(window.ethereum);
-        const _signer = await _provider.getSigner();
-        const _contract = new ethers.Contract(contractAddress, abi, _signer);
-
-        setProvider(_provider);
-        setSigner(_signer);
-        setContract(_contract);
-        toast.success("MetaMask connected successfully!");
-        toast.success("deposit successful");
-      } else {
-        alert("Please install MetaMask to use this application.");
-      }
-    };
-    initializeEthers();
-  }, []);
-
-  const getBalance = async () => {
-    if (contract) {
-      const _balance = await contract.getBalance();
-      setBalance(ethers.formatEther(_balance));
+  async function getBalance() {
+    if (window.ethereum) {
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const contract = new ethers.Contract(ContractAddress, abi, provider)
+      const tx = await contract.getBalance()
+      setUserBalance(ethers.formatEther(tx))
+      toast.success(`Your Balance is: ${ethers.formatEther(tx)} ETH`)
+      
     }
-  };
+  }
 
-  const deposit = async () => {
-    if (contract && amount) {
+  async function setAmount() {
+    if(!amount)
+    if(window.ethereum){ await requestAccounts()}
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+      const contract = new ethers.Contract(ContractAddress, abi, signer)
+      const tx = await contract.deposit(ethers.parseEther(amount), {
+        value: ethers.parseEther(amount)
+      })
+      await tx.wait()
+      toast.success('Deposit Successful')
+      getBalance()
+    } catch (error) {
+      toast.error("Please enter a value")
+    }
+  }
+
+  async function withdrawAmount() {
+    if(window.ethereum){ await requestAccounts()}
+    
+    if(amount || !amount) {
       try {
-        const tx = await contract.deposit(ethers.parseEther(amount), {
-          value: ethers.parseEther(amount),
-        });
-        await tx.wait();
-        toast.success("deposited sucessful");
-        getBalance();
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const signer = await provider.getSigner()
+        const contract = new ethers.Contract(ContractAddress, abi, signer)
+        const tx = await contract.withdraw(ethers.parseEther(amount))
+      await tx.wait()
+      toast.success('withdrawal sucessfull')
+      getBalance()
       } catch (error) {
-        // console.error(error);
-        toast.error("Deposit failed!");
+        toast.error('Please enter a value')
       }
     }
-  };
-
-  const withdraw = async () => {
-    if (contract && amount) {
-      try {
-        const tx = await contract.withdraw(ethers.parseEther(amount));
-        await tx.wait();
-        toast.success("Withdrawal successful!");
-        getBalance();
-      } catch (error) {
-        console.error(error);
-        if (error.code === "CALL_EXCEPTION") {
-          toast.error("Insufficient balance for withdrawal.");
-        } else {
-          toast.error("Withdrawal failed!");
-        }
-      }
-    }
-  };
+  }
 
   return (
-    <>
-    <div className="App">
-      <h1>Assessment DApp</h1>
-      <div>
-        <button onClick={getBalance}>Get Balance</button>
-        <p>Contract Balance: {balance} ETH</p>
-      </div>
-      <div>
-        <input
-          type="number"
-          className="input"
-          placeholder="Enter amount in ETH"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <button onClick={deposit} className="button1">Deposit</button>
-        <button onClick={withdraw} className="button2">Withdraw</button>
-      </div>
-    </div>
-      <ToastContainer/>
+    <div className='App'>
+      <h1>Omoh Dapp</h1>
+      <button onClick={requestAccounts} className='connect-btn'>Connect Wallet</button>
+      <p className='p'>{walletAddress ? walletAddress : 'No wallet Connected'}</p>
 
-    </>
-  );
+
+      <button onClick={getBalance} className='getbalance-btn'>Get Balance</button>
+      <p>Contract Balance: {balance}</p>
+      <div>
+        <input type="number"
+        placeholder='Enter the value in wei'
+        className='input'
+        value={amount}
+        onChange={(e) => {setUserAmount(e.target.value)}}
+        />
+
+        <button onClick={setAmount} className='button1'>Deposit</button>
+        <button onClick={withdrawAmount} className='button2'>Withdraw</button>
+      </div>
+
+      <ToastContainer />
+    </div>
+  )
 }
 
-export default App;
+export default App
